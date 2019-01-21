@@ -1,6 +1,5 @@
 # Caster
 
-Overview   
 Caster enables us to extend html/template so easily.   
 If you want to use same html files such as "header.html", "sidebar.html", Caster is the tool for it.   
 
