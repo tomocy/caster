@@ -97,7 +97,8 @@ go get github.com/tomocy/caster
 ```
 
 ## Useage
-Directory is for example like below.   
+Directory is for example like the below and define template like Demo.   
+Note: master template (in this case "master.html") should be defined as "master" to start with there.   
 ├── view   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── layout   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── master.html   
