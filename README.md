@@ -1,6 +1,7 @@
 # Caster
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CircleCI](https://circleci.com/gh/tomocy/caster.svg?style=svg)](https://circleci.com/gh/tomocy/caster)
 
 Caster enables us to extend html/template so easily.   
 If you want to use same html files such as "header.html", "sidebar.html", Caster is the tool for it.   
