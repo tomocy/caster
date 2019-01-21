@@ -140,8 +140,8 @@ func main() {
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         // Cast view using the key in the viewMap
         if err := caster.Cast(w, "index", nil); err != nil {
-			log.Printf("failed to cast view: %s\n", err)
-		}
+		log.Printf("failed to cast view: %s\n", err)
+	}
     })
 
 	http.ListenAndServe(":8080", nil)
