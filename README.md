@@ -32,8 +32,8 @@ func main() {
     // Ready to cast htmls
     // - create a new Caster instance with common parts
     caster, err := caster.New(
-        "layout/master.html",
-        "layout/sidebar.html",
+        "view/layout/master.html",
+        "view/layout/sidebar.html",
     )
     if err != nil {
         panic(err)
@@ -41,8 +41,8 @@ func main() {
 
     // - name specific htmls and extend them
     viewMap := map[string][]string{
-        "index":   {"index.html"},
-        "new":     {"new.html"},
+        "index":   {"view/index.html"},
+        "new":     {"view/new.html"},
     }
     if err := caster.ExtendAll(viewMap); err != nil {
         panic(err)
