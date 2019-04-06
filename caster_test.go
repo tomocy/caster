@@ -3,6 +3,8 @@ package caster
 import (
 	"bufio"
 	"bytes"
+	"fmt"
+	"html/template"
 	"io"
 	"strings"
 	"testing"
@@ -26,6 +28,33 @@ func TestCast(t *testing.T) {
 	b := &bytes.Buffer{}
 	if err := tester.cast(b, "var", map[string]interface{}{
 		"message": "hello, world",
+	}); err != nil {
+		t.Errorf("unexpected error: %s\n", err)
+	}
+
+	actual := trimWhitespaces(b)
+	if actual != expected {
+		t.Errorf("unexpected output: got %s, expected %s\n", actual, expected)
+	}
+}
+
+func TestCastWithFuncs(t *testing.T) {
+	expected := "<html><head><title>Caster test</title></head><body><header><div><h1>Header</h1></div></header><div><div><h1>Content</h1><h3>hello, tomocy</h3></div></div><footer><div><h6>Footer</h6></div></footer></body></html>"
+	tester := newTester()
+	if err := tester.extend("func", &TemplateSet{
+		Filenames: []string{"testdata/func.html"},
+		FuncMap: template.FuncMap{
+			"greet": func(to string) string {
+				return fmt.Sprintf("hello, %s\n", to)
+			},
+		},
+	}); err != nil {
+		t.Errorf("unexpected error: %s\n", err)
+	}
+
+	b := &bytes.Buffer{}
+	if err := tester.cast(b, "func", map[string]interface{}{
+		"to": "tomocy",
 	}); err != nil {
 		t.Errorf("unexpected error: %s\n", err)
 	}
