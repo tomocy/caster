@@ -22,6 +22,7 @@ main.go
 package main
 
 import (
+    "fmt"
 	"log"
 	"net/http"
 
@@ -31,7 +32,7 @@ import (
 func main() {
     // Ready to cast htmls
     // - create a new Caster instance with common parts
-    caster, err := caster.New(
+    c, err := caster.New(
         "view/layout/master.html",
         "view/layout/sidebar.html",
     )
@@ -40,11 +41,20 @@ func main() {
     }
 
     // - name specific htmls and extend them
-    viewMap := map[string][]string{
-        "index":   {"view/index.html"},
-        "new":     {"view/new.html"},
+    tsetMap := map[string]*caster.TemplateSet{
+        "index": &caster.TemplateSet{
+            Filenames: []string{"view/index.html"},
+        },
+        "new": &caster.TemplateSet{
+            Filenames: []string{"view/new.html"},
+            FuncMap: template.FuncMap{
+                "greet": func(to string) string {
+                    return fmt.Sprintf("hello, %s\n", to)
+                },
+            },
+        },
     }
-    if err := caster.ExtendAll(viewMap); err != nil {
+    if err := caster.ExtendAll(tsetMap); err != nil {
         panic(err)
     }
 
