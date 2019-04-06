@@ -7,9 +7,14 @@ import (
 )
 
 type Caster interface {
-	ExtendAll(map[string][]string) error
-	Extend(key string, fnames ...string) error
+	ExtendAll(tsetMap map[string]*TemplateSet) error
+	Extend(key string, tset *TemplateSet) error
 	Cast(w io.Writer, key string, data interface{}) error
+}
+
+type TemplateSet struct {
+	Filenames []string
+	FuncMap   template.FuncMap
 }
 
 type caster struct {
@@ -29,9 +34,9 @@ func New(layouts ...string) (Caster, error) {
 	}, nil
 }
 
-func (c *caster) ExtendAll(m map[string][]string) error {
-	for key, fnames := range m {
-		if err := c.Extend(key, fnames...); err != nil {
+func (c *caster) ExtendAll(tsetMap map[string]*TemplateSet) error {
+	for key, tset := range tsetMap {
+		if err := c.Extend(key, tset); err != nil {
 			return err
 		}
 	}
@@ -39,12 +44,12 @@ func (c *caster) ExtendAll(m map[string][]string) error {
 	return nil
 }
 
-func (c *caster) Extend(key string, fnames ...string) error {
+func (c *caster) Extend(key string, tset *TemplateSet) error {
 	tmpl, err := c.layoutTmpl.Clone()
 	if err != nil {
 		return fmt.Errorf("faild to extend template: %s\n", err)
 	}
-	tmpl, err = tmpl.ParseFiles(fnames...)
+	tmpl, err = tmpl.Funcs(tset.FuncMap).ParseFiles(tset.Filenames...)
 	if err != nil {
 		return fmt.Errorf("faild to extend template: %s\n", err)
 	}

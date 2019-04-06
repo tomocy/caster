@@ -17,7 +17,9 @@ func TestCast(t *testing.T) {
 			"testdata/footer.html",
 		},
 	}
-	if err := tester.extend("index", "testdata/index.html"); err != nil {
+	if err := tester.extend("index", &TemplateSet{
+		Filenames: []string{"testdata/index.html"},
+	}); err != nil {
 		t.Errorf("unexpected error: %s\n", err)
 	}
 
@@ -54,12 +56,22 @@ type tester struct {
 	layouts []string
 }
 
-func (t *tester) extend(key string, fnames ...string) error {
+func newTester() *tester {
+	return &tester{
+		layouts: []string{
+			"testdata/master.html",
+			"testdata/header.html",
+			"testdata/footer.html",
+		},
+	}
+}
+
+func (t *tester) extend(key string, tset *TemplateSet) error {
 	caster, err := New(t.layouts...)
 	if err != nil {
 		return err
 	}
-	if err := caster.Extend(key, fnames...); err != nil {
+	if err := caster.Extend(key, tset); err != nil {
 		return err
 	}
 
