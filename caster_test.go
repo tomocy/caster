@@ -17,14 +17,14 @@ func TestCast(t *testing.T) {
 			"testdata/footer.html",
 		},
 	}
-	if err := tester.extend("index", &TemplateSet{
-		Filenames: []string{"testdata/index.html"},
+	if err := tester.extend("var", &TemplateSet{
+		Filenames: []string{"testdata/var.html"},
 	}); err != nil {
 		t.Errorf("unexpected error: %s\n", err)
 	}
 
 	b := &bytes.Buffer{}
-	if err := tester.cast(b, "index", map[string]interface{}{
+	if err := tester.cast(b, "var", map[string]interface{}{
 		"message": "hello, world",
 	}); err != nil {
 		t.Errorf("unexpected error: %s\n", err)
