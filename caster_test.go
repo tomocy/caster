@@ -13,10 +13,12 @@ import (
 func TestCast(t *testing.T) {
 	expected := "<html><head><title>Caster test</title></head><body><header><div><h1>Header</h1></div></header><div><div><h1>Content</h1><h3>hello, world</h3></div></div><footer><div><h6>Footer</h6></div></footer></body></html>"
 	tester := &tester{
-		layouts: []string{
-			"testdata/master.html",
-			"testdata/header.html",
-			"testdata/footer.html",
+		tset: &TemplateSet{
+			Filenames: []string{
+				"testdata/master.html",
+				"testdata/header.html",
+				"testdata/footer.html",
+			},
 		},
 	}
 	if err := tester.extend("var", &TemplateSet{
@@ -38,6 +40,42 @@ func TestCast(t *testing.T) {
 	}
 }
 
+func TestCastWithDefaultFuncs(t *testing.T) {
+	expected := "<html><head><title>Caster test</title></head><body><header><div><h1>hello, tomocy</h1></div></header><div><div><h1>Content</h1><h3>hello, world</h3></div></div><footer><div><h6>Footer</h6></div></footer></body></html>"
+	tester := &tester{
+		tset: &TemplateSet{
+			Filenames: []string{
+				"testdata/master.html",
+				"testdata/header_func.html",
+				"testdata/footer.html",
+			},
+			FuncMap: template.FuncMap{
+				"greet": func(to string) string {
+					return fmt.Sprintf("hello, %s\n", to)
+				},
+			},
+		},
+	}
+
+	if err := tester.extend("var", &TemplateSet{
+		Filenames: []string{"testdata/var.html"},
+	}); err != nil {
+		t.Errorf("unexpected error: %s\n", err)
+	}
+
+	b := &bytes.Buffer{}
+	if err := tester.cast(b, "var", map[string]interface{}{
+		"to":      "tomocy",
+		"message": "hello, world",
+	}); err != nil {
+		t.Errorf("unexpected error: %s\n", err)
+	}
+
+	actual := trimWhitespaces(b)
+	if actual != expected {
+		t.Errorf("unexpected output: got %s, expected %s\n", actual, expected)
+	}
+}
 func TestCastWithFuncs(t *testing.T) {
 	expected := "<html><head><title>Caster test</title></head><body><header><div><h1>Header</h1></div></header><div><div><h1>Content</h1><h3>hello, tomocy</h3></div></div><footer><div><h6>Footer</h6></div></footer></body></html>"
 	tester := newTester()
@@ -81,22 +119,24 @@ func trimWhitespaces(r io.Reader) string {
 }
 
 type tester struct {
-	caster  Caster
-	layouts []string
+	caster Caster
+	tset   *TemplateSet
 }
 
 func newTester() *tester {
 	return &tester{
-		layouts: []string{
-			"testdata/master.html",
-			"testdata/header.html",
-			"testdata/footer.html",
+		tset: &TemplateSet{
+			Filenames: []string{
+				"testdata/master.html",
+				"testdata/header.html",
+				"testdata/footer.html",
+			},
 		},
 	}
 }
 
 func (t *tester) extend(key string, tset *TemplateSet) error {
-	caster, err := New(t.layouts...)
+	caster, err := New(t.tset)
 	if err != nil {
 		return err
 	}

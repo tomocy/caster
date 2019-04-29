@@ -22,8 +22,9 @@ type caster struct {
 	layoutTmpl *template.Template
 }
 
-func New(layouts ...string) (Caster, error) {
-	layoutTmpl, err := template.ParseFiles(layouts...)
+func New(tset *TemplateSet) (Caster, error) {
+	t := template.New("")
+	layoutTmpl, err := t.Funcs(tset.FuncMap).ParseFiles(tset.Filenames...)
 	if err != nil {
 		return nil, fmt.Errorf("faild to create new caster: %s\n", err)
 	}
