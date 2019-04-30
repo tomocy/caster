@@ -33,8 +33,12 @@ func main() {
     // Ready to cast htmls
     // - create a new Caster instance with common parts
     c, err := caster.New(
-        "view/layout/master.html",
-        "view/layout/sidebar.html",
+        &caster.TemplateSet{
+            Filenames: []string{
+                "view/layout/master.html",
+                "view/layout/sidebar.html",
+            },
+        },
     )
     if err != nil {
         panic(err)
